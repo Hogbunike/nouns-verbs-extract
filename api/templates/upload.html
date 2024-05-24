@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload PDF</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="email"], input[type="file"] {
+            display: block;
+            margin-bottom: 10px;
+        }
+        button {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #responseContainer {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        .responseItem {
+            margin-bottom: 10px;
+        }
+        .responseItem strong {
+            display: inline-block;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload PDF</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" required>
+        <br>
+        <label for="file">PDF File:</label>
+        <input type="file" name="file" id="file" accept="application/pdf" required>
+        <br>
+        <button type="submit">Upload</button>
+    </form>
+    <br>
+    <button onclick="window.location.href='https://github.com/Hogbunike'">GitHub Link</button>
+    <button onclick="window.location.href='https://yourdeployedapp.com'">Deployed App Link</button>
+    <br><br>
+    <div id="responseContainer"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+
+            const formData = new FormData();
+            formData.append('email', document.getElementById('email').value);
+            formData.append('file', document.getElementById('file').files[0]);
+
+            axios.post('/api/upload/', formData)
+                .then(function(response) {
+                    const responseData = response.data;
+                    const responseContainer = document.getElementById('responseContainer');
+                    responseContainer.innerHTML = `
+                        <h2>Response</h2>
+                        <div class="responseItem"><strong>Email:</strong> ${responseData.email}</div>
+                        
+                        <div class="responseItem"><strong>Nouns:</strong> ${responseData.nouns}</div>
+                        <div class="responseItem"><strong>Verbs:</strong> ${responseData.verbs}</div>
+                    `;
+                })
+                .catch(function(error) {
+                    console.error('Error uploading file:', error);
+                    const responseContainer = document.getElementById('responseContainer');
+                    responseContainer.innerHTML = `<p style="color: red;">Error uploading file. Please try again.</p>`;
+                });
+        });
+    </script>
+</body>
+</html>
+
+
+
